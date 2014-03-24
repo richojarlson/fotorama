@@ -899,7 +899,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
 
       if(resumeAutoplayFLAG) {
         resumeAutoplayFLAG = false;
-        triggerEvent('resumeautoplay');
+        triggerEvent('resumeautoplay', {remainInterval: remainInterval});
       } else {
         triggerEvent('startautoplay');
       }
@@ -915,17 +915,6 @@ jQuery.Fotorama = function ($fotorama, opts) {
       changeAutoplay.t = setTimeout(function () {
         if (pausedAutoplayFLAG || stoppedAutoplayFLAG || _activeIndex !== activeIndex) return;
         that.show(o_loop ? getDirectionSign(!o_rtl) : normalizeIndex(activeIndex + (o_rtl ? -1 : 1)));
-
-        //set default interval on frame change
-        if(initialInterval && remainInterval < initialInterval) {
-            setAutoplayInterval(initialInterval);
-            initialInterval = null;
-            changeAutoplay();
-        }
-
-        newFrameTime = new Date().getTime();
-        pausedTime = 0;
-
       }, opts.autoplay);
     });
 
@@ -958,8 +947,12 @@ jQuery.Fotorama = function ($fotorama, opts) {
         initialInterval = +opts.autoplay;
     }
 
-    var now = pausedTime = new Date().getTime();
-    remainInterval = initialInterval - (now - newFrameTime);
+    if(newFrameTime != null && newFrameTime === newFrameTime) {
+      var now = pausedTime = new Date().getTime();
+      remainInterval = initialInterval - (now - newFrameTime);
+    } else {
+      remainInterval = initialInterval;
+    }
 
     resumeAutoplayFLAG = false;
     pausedAutoplayFLAG = true;
@@ -1035,6 +1028,15 @@ jQuery.Fotorama = function ($fotorama, opts) {
     });
     //console.timeEnd('triggerEvent');
     //}, 0);
+
+    //set default interval on frame change
+    if(initialInterval && remainInterval < initialInterval) {
+        setAutoplayInterval(initialInterval);
+        initialInterval = null;
+        changeAutoplay();
+    }
+    newFrameTime = new Date().getTime();
+    pausedTime = 0;
 
     //console.time('bind onEnd');
     var onEnd = that.show.onEnd = function (skipReposition) {
