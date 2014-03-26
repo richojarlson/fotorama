@@ -1389,13 +1389,17 @@ jQuery.Fotorama = function ($fotorama, opts) {
   }
 
   stageShaftTouchTail = moveOnTouch($stageShaft, {
-    onStart: onTouchStart,
+    onStart: function(){
+      onTouchStart();
+        triggerEvent('touchstart');
+    },
     onMove: function (e, result) {
       setShadow($stage, result.edge);
     },
     onTouchEnd: onTouchEnd,
     onEnd: function (result) {
       //console.time('stageShaftTouchTail.onEnd');
+      triggerEvent('touchend');
       setShadow($stage);
 
       var toggleControlsFLAG = (MS_POINTER && !hoverFLAG || result.touch) && opts.arrows;
