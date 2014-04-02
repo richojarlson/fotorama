@@ -962,7 +962,7 @@ jQuery.Fotorama = function ($fotorama, opts) {
   };
 
   that.resumeAutoplay = function () {
-    if (that.autoplay) { return this; }
+    if (that.autoplay || !pausedAutoplayFLAG) { return this; }
 
     pausedAutoplayFLAG = false;
     resumeAutoplayFLAG = true;
